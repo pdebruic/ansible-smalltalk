@@ -1,5 +1,5 @@
 ---
-user: deploy
+deply_user: deploy
 nginx_server_name: example.com
 servers_and_ports:
     - {name: seaside, port: 9001}
