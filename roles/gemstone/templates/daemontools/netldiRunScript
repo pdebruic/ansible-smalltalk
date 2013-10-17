@@ -1,0 +1,13 @@
+#!/bin/bash
+source {{gemstone_config}}
+export GEMSTONE_NRS_ALL='#dir:$GEMSTONE_DATADIR#log:/$GEMSTONE_LOGDIR/%N%P.log'
+
+export GEMSTONE_SYS_CONF=$GEMSTONE_DATADIR/system.conf
+export GEMSTONE_EXE_CONF=$GEMSTONE_DATADIR
+
+# not sure if I need to kick over the gems or not
+#for i in `ls -d /etc/service/gs_*`; do
+#   setuidgid {{deploy_user sudo svc -t $i
+#done
+
+exec setuidgid {{deploy_user  fghack $GEMSTONE/bin/startnetldi -g -a {{deploy_user -n -l $GEMSTONE_LOGDIR/gs64ldi.log

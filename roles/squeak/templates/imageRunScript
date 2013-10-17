@@ -1,0 +1,17 @@
+#!/bin/bash
+# for use by daemontools to start the image
+
+# settings
+USER="{{deploy_user"
+VM="./vm.sh"
+VM_PARAMS="-mmap 256m -vm-sound-null -vm-display-null"
+IMAGE="{{item.name}}"
+STARTUP_SCRIPT="imageStartScript.st"
+
+exec 2>&1
+
+# start the vm
+exec \
+    setuidgid "$USER" \
+    "$VM" $VM_PARAMS "$IMAGE" "$STARTUP_SCRIPT"
+

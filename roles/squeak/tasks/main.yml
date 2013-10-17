@@ -1,0 +1,145 @@
+---
+- name: make sure git, zip, daemontools, curl are installed
+  apt: name={{item}} state=present
+  with_items:
+    - git
+    - zip
+    - daemontools-run
+    - daemontools
+    - curl
+    
+- name: make sure the package-cache directory exists
+  file:
+    state=directory
+    dest=/opt/package-cache
+    owner={{deploy_user
+    group={{deploy_user
+    
+- name: make the template service directory
+  file:
+    state=directory
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/log"
+    owner={{deploy_user
+    group={{deploy_user
+    
+- name: download the squeak trunk image
+  get_url:
+    url="http://ftp.squeak.org/current_stable/Squeak4.4-12327.zip"
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+    
+- name: unzip the image
+  command:
+    unzip -oj "{{daemontools_template_dir}}/{{finished_image_name}}_template/Squeak4.4-12327.zip"
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template"
+
+- name: download the squeak sources file
+  get_url:
+    url="http://ftp.squeak.org/current_stable/SqueakV41.sources.zip"
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+
+- name: unzip the sources file
+  command:
+    unzip -oj "{{daemontools_template_dir}}/{{finished_image_name}}_template/SqueakV41.sources.zip"
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template"
+
+- name: "make the {{deploy_user the owner of the image, sources, changes file"
+  shell:
+    chown "{{deploy_user:{{deploy_user" *.changes *.image *.sources
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+
+  
+# get the vm
+- include: useEliotsCogVM.yml
+ 
+
+- name: copy up the script that finds the image name
+  copy:
+    src=imageFileName.sh
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0755
+
+- name: get the name of the latest image file
+  shell:
+    ./imageFileName.sh
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template"
+  register: base_image_name
+
+- name: link to the package cache
+  file:
+    state=link
+    src=/opt/package-cache
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/package-cache"
+
+- include: installChronosTimeZones.yml
+  when: using_chronos
+
+- name: build the image construction script
+  template:
+    src=imageBuildScript.st
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0644
+    
+- name: copy up the image building script
+  template:
+    src=buildImage.sh
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0755
+    
+- name: build the image
+  shell:
+    ./buildImage.sh
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template/"
+    creates="{{daemontools_template_dir}}/{{finished_image_name}}_template/{{finished_image_name}}.image"
+
+# daemontools part
+- name: copy up the daemontools logging script
+  copy:
+    src=logRunScript
+    dest="{{daemontools_template_dir}}/{{finished_image_name}}_template/log/run"
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0755
+
+- name: make a copy of the template directory per image you want to run, with the port number
+  shell:
+    cp -r "{{daemontools_template_dir}}/{{finished_image_name}}_template/" "{{daemontools_template_dir}}/{{item.name}}_{{item.port}}/"
+    executable=/bin/bash
+  with_items: servers_and_ports
+
+- name: copy up the daemontools run script
+  template:
+    src=imageRunScript
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0755
+    dest="{{daemontools_template_dir}}/{{item.name}}_{{item.port}}/run" 
+  with_items: servers_and_ports
+
+- name: copy up the image start script used by daemontools to start the images
+  template:
+    src=imageStartScript.st
+    owner={{deploy_user
+    group={{deploy_user
+    mode=0644
+    dest="{{daemontools_template_dir}}/{{item.name}}_{{item.port}}/imageStartScript.st" 
+  with_items: servers_and_ports
+
+- name: make sure the "{{deploy_user" user owns the new directories and files
+  command: chown -R "{{deploy_user:{{deploy_user" "{{daemontools_template_dir}}/{{item.name}}_{{item.port}}"
+  with_items: servers_and_ports
+
+- name: make sure daemontools is running
+  service: name=svscan state=started
+
+- name: link the image directories into the directory daemontools monitors so they start
+  file:
+    state=link
+    src="{{daemontools_template_dir}}/{{item.name}}_{{item.port}}"
+    dest="{{daemontools_service_dir}}/{{item.name}}_{{item.port}}"
+  with_items: servers_and_ports

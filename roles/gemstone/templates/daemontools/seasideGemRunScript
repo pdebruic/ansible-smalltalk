@@ -1,0 +1,7 @@
+#!/bin/bash
+# for use by daemontools to start the seaside gems
+source {{gemstone_config}}
+scriptpath=$(dirname $0)
+[ -r $scriptpath/config.local ] && source $scriptpath/config.local
+$GEMSTONE/bin/waitstone $GEMSTONE_NAME 2
+exec setuidgid {{deploy_user $GEMSTONE/seaside/bin/seasideGem30_oodb31 daemon-seaside $GEM_PORT

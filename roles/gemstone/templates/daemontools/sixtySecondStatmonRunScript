@@ -1,0 +1,8 @@
+#!/bin/bash
+source {{gemstone_config}}
+$GEMSTONE/bin/waitstone $GEMSTONE_NAME 2
+# Create the stats directory if it's not there
+mkdir -p /home/{{deploy_user/stats/60-second
+chown -R {{deploy_user:{{deploy_user /home/{{deploy_user/stats
+cd /home/{{deploy_user/stats/60-second
+exec setuidgid {{deploy_user $GEMSTONE/bin/statmonitor $GEMSTONE_NAME -rAzq -h 24 -i 60

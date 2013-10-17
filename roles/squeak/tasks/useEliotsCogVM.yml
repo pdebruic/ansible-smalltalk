@@ -1,0 +1,20 @@
+- name: get eliots 2776 vm
+  get_url: 
+    url=http://www.mirandabanda.org/files/Cog/VM/VM.r2776/coglinux-13.33.2776.tgz 
+    dest="/etc/sv/{{finished_image_name}}_template/" 
+- name: extract the vm
+  command: 
+    tar xvfz "/etc/sv/{{finished_image_name}}_template/coglinux-13.33.2776.tgz" 
+    chdir="/etc/sv/{{finished_image_name}}_template/"
+- name: change the owner of the vm directory
+  command: 
+    chown -R "{{deploy_user:{{deploy_user" coglinux 
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template"
+- name: copy up the vm run script for Eliots cog vm
+  copy: 
+    src=eliotvm.sh 
+    dest="/etc/sv/{{finished_image_name}}_template/vm.sh" 
+    mode=0755 
+    owner={{deploy_user 
+    group={{deploy_user
+

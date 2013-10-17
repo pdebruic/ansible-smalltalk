@@ -1,0 +1,20 @@
+---
+daemontools_template_dir: /etc/sv
+daemontools_service_dir: /etc/service
+finished_image_name: seaside
+servers_and_ports:
+  -
+    name: "{{finished_image_name}}"
+    port: 8080
+  -
+    name: "{{finished_image_name}}"
+    port: 8081
+  -
+    name: "{{finished_image_name}}"
+    port: 8082
+  -
+    name: "{{finished_image_name}}"
+    port: 8083
+  -
+    name: "{{finished_image_name}}"
+    port: 8084

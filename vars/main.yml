@@ -1,0 +1,13 @@
+---
+deploy_user: deploy
+deploy_password: ''
+www_user: www-data
+nginx_server_name: example.com
+servers_and_ports:
+    - {name: seaside, port: 9001}
+    - {name: seaside, port: 9002}
+    - {name: seaside, port: 9003}
+#    - {name: stripe, port: 8990}
+#    - {name: tropo, port: 8980}
+seaside_version: '3.0.8'
+using_chronos: false

@@ -1,0 +1,16 @@
+---
+# netldi
+- name: make empty netldi template directory
+  file: state=directory dest="{{daemontools_template_dir}}/gsNetldi/log"
+- name: copy in the ndetldi run script
+  template: src=daemontools/netldiRunScript dest="{{daemontools_template_dir}}/gsNetldi/run" mode=0755
+- name: copy in the log run script
+  copy: src=daemontools/logRunScript dest="{{daemontools_template_dir}}/gsNetldi/log/run" mode=0755
+
+# GemStone
+- name: make empty gemstone template directory
+  file: state=directory dest="{{daemontools_template_dir}}/gsGemstone/log"
+- name: copy in the gemstone run script
+  template: src=daemontools/gemStoneRunScript dest="{{daemontools_template_dir}}/gsGemstone/run" mode=0755
+- name: copy in the log run script
+  copy: src=daemontools/logRunScript dest="{{daemontools_template_dir}}/gsGemstone/log/run" mode=0755

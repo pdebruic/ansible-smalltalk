@@ -1,0 +1,5 @@
+#!/bin/bash
+# Enable Gemstone init scripts, necessary for start on boot
+# 1=enabled 0=disabled
+ENABLED=1
+export GEMSTONE_CONFIG="/opt/gemstone/product/seaside/defSeaside" 

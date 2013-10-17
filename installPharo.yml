@@ -1,0 +1,13 @@
+---
+-
+  hosts: pharo
+  sudo: true
+  vars_files:
+    - vars/main.yml
+    - vars/pharoPlatform.yml
+  roles:
+    - {role: ia32-libs, when: ansible_userspace_bits == "64"} #install 32 bit libraries on 64 bit platforms
+    - pharo
+    - nginx
+    
+...

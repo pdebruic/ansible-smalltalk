@@ -1,0 +1,34 @@
+---
+- name: ensure nginx is installed
+  apt: name=nginx state=present
+- name: make sure the www root directory exists
+  file:
+    state=directory
+    dest="/var/www/{{nginx_server_name}}"
+    owner={{www_user}}
+    group={{www_user}}
+    mode=0755
+- name: copy the nginx "{{smalltalk_platform}}" configuration into sites-available
+  template:
+    src="{{smalltalk_platform}}-site.conf"
+    dest="/etc/nginx/sites-available/{{smalltalk_platform}}-site.conf"
+    owner={{www_user}}
+    group={{www_user}}
+    mode=0644
+- name: link the nginx "{{smalltalk_platform}}" configuration into sites-enabled
+  file:
+    state=link
+    src="/etc/nginx/sites-available/{{smalltalk_platform}}-site.conf"
+    dest="/etc/nginx/sites-enabled/{{smalltalk_platform}}-site.conf"
+    owner={{www_user}}
+    group={{www_user}}
+    mode=0644
+  notify:
+    - restart nginx
+- name: make sure the www-data user owns the log directories and files
+  shell: executable=/bin/bash chown -R www-data:www-data /var/log/nginx
+- name: make sure the www-data user owns the etc/nginx directory and files
+  shell: executable=/bin/bash chown -R www-data:www-data /etc/nginx
+- name: make the firewall allow connections on 80 if its not already
+  shell: ufw allow 80/tcp
+  

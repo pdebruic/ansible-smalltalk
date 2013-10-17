@@ -1,0 +1,21 @@
+---
+daemontools_template_dir: /etc/sv
+daemontools_service_dir: /etc/service
+pharo_vers: 14 # use 20 for 2.0, 13 for 1.3 etc
+finished_image_name: seaside
+servers_and_ports:
+  -
+    name: "{{finished_image_name}}"
+    port: 8080
+  -
+    name: "{{finished_image_name}}"
+    port: 8081
+  -
+    name: "{{finished_image_name}}"
+    port: 8082
+  -
+    name: "{{finished_image_name}}"
+    port: 8083
+  -
+    name: "{{finished_image_name}}"
+    port: 8084

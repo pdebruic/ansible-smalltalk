@@ -1,0 +1,40 @@
+# when using a version of pharo less thn 2 these items are skipped
+- name: download the latest stable pharo vm for pharo 2
+  get_url:
+    url=http://files.pharo.org/vm/pharo/linux/Pharo-VM-linux-stable.zip
+    dest="/etc/sv/{{finished_image_name}}_template/"
+  when: pharo_vers >= 20
+
+- name: unzip the vm and store the created filenames so we can change the owners
+  command:
+    unzip -oj Pharo-VM-linux-stable.zip
+    chdir="{{daemontools_template_dir}}/{{finished_image_name}}_template"
+  when: pharo_vers >= 20
+
+- name: get the list of file names delivered in the vm zip
+  command:
+    zipinfo -1 "{{daemontools_template_dir}}/{{finished_image_name}}_template/Pharo-VM-linux-stable.zip"
+  register: files_to_chown
+  when: pharo_vers >= 20
+
+- name: make sure files_to_chown is an empty list when not using this vm
+  when: pharo_vers < 20
+  command: echo []
+  register: files_to_chown
+
+- name: make the user the owner of the VM files
+  file:
+    path="{{daemontools_template_dir}}/{{finished_image_name}}_template/{{item}}"
+    owner={{deploy_user
+    group={{deploy_user 
+  with_items: ${files_to_chown.stdout_lines}
+  when: pharo_vers >= 20
+
+- name: copy up the vm run script for pharo 2.0
+  copy:
+    src=pharovm.sh
+    dest="/etc/sv/{{finished_image_name}}_template/vm.sh"
+    mode=0755
+    owner={{deploy_user
+    group={{deploy_user
+  when: pharo_vers >= 20

@@ -1,0 +1,5 @@
+#!/bin/bash
+source /etc/default/gemstone
+source $GEMSTONE_CONFIG
+$GEMSTONE/bin/waitstone $GEMSTONE_NAME 2
+exec setuidgid $GEMSTONE_USER $GEMSTONE/seaside/bin/maintenanceGemSea30_oodb31

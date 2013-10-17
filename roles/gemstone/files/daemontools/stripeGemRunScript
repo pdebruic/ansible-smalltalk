@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# for use by daemontools to start the stripe server
+
+source /etc/default/gemstone
+source $GEMSTONE_CONFIG
+scriptpath=$(dirname $0)
+[ -r $scriptpath/config.local ] && source $scriptpath/config.local
+$GEMSTONE/bin/waitstone $GEMSTONE_NAME 2
+exec setuidgid $GEMSTONE_USER $GEMSTONE/seaside/bin/stripeRunGem daemon-stripe $GEM_PORT

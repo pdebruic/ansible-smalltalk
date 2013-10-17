@@ -1,0 +1,8 @@
+---
+
+- name: create /etc/default/gemstone
+  copy: src=etc/default/gemstone dest=/etc/default/gemstone mode=0644
+- name: copy gemstone/seaside run scripts
+  copy: src="{{item}}" dest="{{gemstone_seaside_dir}}/bin/" mode=0755
+  with_fileglob:
+    - seaside/*

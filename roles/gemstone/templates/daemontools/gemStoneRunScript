@@ -1,0 +1,32 @@
+#!/bin/bash
+source {{gemstone_config}}
+
+# check for the license key
+if [ -s $GEMSTONE/seaside/etc/gemstone.secret ]; then
+      . $GEMSTONE/seaside/etc/gemstone.secret
+else
+      echo 'Missing password file $GEMSTONE/seaside/etc/gemstone.secret'
+      exit 1
+ fi
+
+# stop all the gems - not usre if they'll die on their own without the stone running
+#for i in `ls -d /etc/service/gs_*`; do
+#   setuidgid {{deploy_user  sudo svc -d $i
+#done
+
+
+echo "Starting stone: $GEMSTONE_NAME"
+
+setuidgid {{deploy_user $GEMSTONE/seaside/bin/stopGemstone $GEMSTONE_CURATOR_PASS
+
+#start netldi - don't use if you're also using daemontools to manage netldi
+#setuidgid {{deploy_user startnet
+
+# start all the gems, which use waitstone to wait on the gemstone instance
+#for i in `ls -d /etc/service/gs_*`; do
+#    setuidgid {{deploy_user sudo svc -u $i
+#done
+
+
+
+exec setuidgid {{deploy_user fghack $GEMSTONE/bin/startstone $GEMSTONE_NAME -z $GEMSTONE_SYS_CONF -l $GEMSTONE_LOGDIR/$GEMSTONE_NAME.log

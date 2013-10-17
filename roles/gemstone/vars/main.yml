@@ -1,0 +1,9 @@
+---
+  user: deploy
+  daemontools_service_dir: /etc/service
+  daemontools_template_dir: /etc/sv
+  gemstone_vers: 3.1.0.4
+  gemstone_base_dir: /opt/gemstone/product
+  gemstone_seaside_dir: "{{gemstone_base_dir}}/seaside"
+  gemstone_config: "{{gemstone_seaside_dir}}/defSeaside"
+

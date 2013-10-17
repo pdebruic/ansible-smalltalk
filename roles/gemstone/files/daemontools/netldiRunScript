@@ -1,0 +1,15 @@
+#!/bin/bash
+source /etc/default/gemstone
+source $GEMSTONE_CONFIG
+export GEMSTONE_NRS_ALL='#dir:$GEMSTONE_DATADIR#log:/$GEMSTONE_LOGDIR/%N%P.log'
+
+export GEMSTONE_SYS_CONF=$GEMSTONE_DATADIR/system.conf
+export GEMSTONE_EXE_CONF=$GEMSTONE_DATADIR
+
+for i in `ls -d /etc/service/gs_*`; do
+   sudo svc -d $i
+done
+
+$GEMSTONE/seaside/bin/stopGemstone $GEMSTONE_CURATOR_PASS
+
+exec setuidgid $GEMSTONE_USER fghack $GEMSTONE/bin/startnetldi -g -a $GEMSTONE_USER -n -l $GEMSTONE_LOGDIR/gs64ldi.log

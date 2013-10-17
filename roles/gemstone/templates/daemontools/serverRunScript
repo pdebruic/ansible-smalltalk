@@ -1,0 +1,5 @@
+#!/bin/bash
+# for use by daemontools to start the seaside gems
+source {{gemstone_config}}
+$GEMSTONE/bin/waitstone $GEMSTONE_NAME 2
+exec setuidgid {{deploy_user $GEMSTONE/seaside/bin/{{item.name}}Gem_oodb31 daemontools-{{item.name}}-{{item.port}} {{item.port}}
