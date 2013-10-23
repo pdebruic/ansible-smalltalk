@@ -1,8 +1,17 @@
 ---
 - name: change the ownership of /opt/scripts
-  file: state=directory dest=/opt/scripts owner={{deploy_user group={{deploy_user
+  file:
+    state=directory
+    dest=/opt/scripts
+    owner={{deploy_user}}
+    group={{deploy_user}}
 - name: upload gemstone install script
-  copy: src=installGemstone.sh dest=/opt/scripts/installGemstone.sh owner={{deploy_user group={{deploy_user mode=0755
+  copy:
+    src=installGemstone.sh
+    dest=/opt/scripts/installGemstone.sh
+    owner={{deploy_user}}
+    group={{deploy_user}}
+    mode=0755
 - name: make sure git, daemontools, and zip are installed
   apt: name={{item}} state=present
   with_items:
@@ -13,24 +22,40 @@
     - curl
 
 - name: install gemstone
-  command: /bin/bash /opt/scripts/installGemstone.sh "{{gemstone_vers}}" #executable=/bin/bash 
+  command: /bin/bash /opt/scripts/installGemstone.sh "{{gemstone_vers}}" 
   sudo: false
+  
 - name: add the github ssh key to known hosts
   shell: ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts
-- name: copy in the time-zones directory for chronos
-  git: repo=https://github.com/pdebruic/ChronosTimeZones.git dest=/opt/ChronosTimeZones depth=1 update=yes
+  
+- include: installChronosTimeZones.yml
   when: using_chronos
 
-- name: link the timezone rules into the gemstone directory
-  file: state=link src=/opt/ChronosTimeZones/time-zones dest="{{gemstone_seaside_dir}}/data/time-zones"
 - include: copyScriptsAndDefaults.yml
+
 - include: setupStoneDaemontools.yml 
+
 - include: startStoneDaemontools.yml
+
 - name: create the seaside load script
-  template: src=topazSeasideLoadScript.st dest=/opt/scripts/topazSeasideLoadScript.st owner={{deploy_user group={{deploy_user
+  template:
+    src=topazSeasideLoadScript.st
+    dest=/opt/scripts/topazSeasideLoadScript.st
+    owner={{deploy_user}}
+    group={{deploy_user}}
+
 - name: upload the seaside install script
-  template: src=installSeasideForGemstone.sh dest=/opt/scripts/installSeasideForGemstone.sh owner={{deploy_user group={{deploy_user mode=0755
+  template:
+    src=installSeasideForGemstone.sh
+    dest=/opt/scripts/installSeasideForGemstone.sh
+    owner={{deploy_user}}
+    group={{deploy_user}}
+    mode=0755
+    
 - name: load seaside into gemstone
-  shell: /bin/bash /opt/scripts/installSeasideForGemstone.sh creates=/opt/scripts/seasideLoaded  
+  shell:
+    /bin/bash /opt/scripts/installSeasideForGemstone.sh
+    
 - include: setupGemsDaemontools.yml
+
 - include: startGemsDaemontools.yml
